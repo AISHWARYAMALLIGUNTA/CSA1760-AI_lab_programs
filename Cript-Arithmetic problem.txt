@@ -1,0 +1,22 @@
+import itertools
+
+def solve_cryptarithmetic():
+    # Define the puzzle
+    letters = 'SENDMORY'
+    digits = '0123456789'
+    
+    # Generate all possible digit combinations
+    for perm in itertools.permutations(digits, len(letters)):
+        trans = str.maketrans(letters, ''.join(perm))
+        send = int('SEND'.translate(trans))
+        more = int('MORE'.translate(trans))
+        money = int('MONEY'.translate(trans))
+        
+        # Check if the equation is satisfied
+        if send + more == money:
+            print(f"SEND = {send}")
+            print(f"MORE = {more}")
+            print(f"MONEY = {money}")
+            break
+
+solve_cryptarithmetic()

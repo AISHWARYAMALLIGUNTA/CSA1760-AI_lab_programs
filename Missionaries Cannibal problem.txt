@@ -1,0 +1,69 @@
+from collections import deque
+
+def is_valid(state):
+    m1, c1, m2, c2 = state
+    if m1 < 0 or c1 < 0 or m2 < 0 or c2 < 0:
+        return False
+    if m1 > 0 and m1 < c1:
+        return False
+    if m2 > 0 and m2 < c2:
+        return False
+    return True
+
+def get_successors(state, boat):
+    m1, c1, m2, c2 = state
+    if boat == 'left':
+        new_states = [
+            (m1 - 2, c1, m2 + 2, c2),
+            (m1 - 1, c1, m2 + 1, c2),
+            (m1, c1 - 2, m2, c2 + 2),
+            (m1, c1 - 1, m2, c2 + 1),
+            (m1 - 1, c1 - 1, m2 + 1, c2 + 1)
+        ]
+    else:
+        new_states = [
+            (m1 + 2, c1, m2 - 2, c2),
+            (m1 + 1, c1, m2 - 1, c2),
+            (m1, c1 + 2, m2, c2 - 2),
+            (m1, c1 + 1, m2, c2 - 1),
+            (m1 + 1, c1 + 1, m2 - 1, c2 - 1)
+        ]
+    valid_states = [(new_state, 'right' if boat == 'left' else 'left') for new_state in new_states if is_valid(new_state)]
+    return valid_states
+
+def bfs(start_state):
+    queue = deque([(start_state, 'left', [])])
+    visited = set()
+    while queue:
+        state, boat, path = queue.popleft()
+        if state == (0, 0, 3, 3):
+            return path + [(state, boat)]
+        if (state, boat) in visited:
+            continue
+        visited.add((state, boat))
+        for successor, new_boat in get_successors(state, boat):
+            queue.append((successor, new_boat, path + [(state, boat)]))
+    return None
+
+def print_solution(solution):
+    if not solution:
+        print("No solution found.")
+        return
+    for i, step in enumerate(solution):
+        state, boat = step
+        m1, c1, m2, c2 = state
+        left_side = 'M' * m1 + 'C' * c1
+        right_side = 'M' * m2 + 'C' * c2
+        boat_position = 'Left' if boat == 'left' else 'Right'
+        boat_content = (3 - m1 - m2) * 'M' + (3 - c1 - c2) * 'C'
+
+        print(f"Step {i + 1}:")
+        if boat == 'left':
+            print(f"Left side: {left_side} | Boat: {boat_content} | Right side: {right_side}")
+        else:
+            print(f"Left side: {left_side} | Boat: {boat_content} | Right side: {right_side}")
+        print()
+
+start_state = (3, 3, 0, 0)
+solution = bfs(start_state)
+print_solution(solution)
